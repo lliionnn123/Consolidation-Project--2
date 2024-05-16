@@ -36,53 +36,45 @@ def letter_guess(chosen_word, guessed_letters):
         print(f"Nice guess but '{guess}' isn't in the word.")
     return True
 
-def word_guesses(chosen_word, num_guesses):
+def word_guesses(chosen_word):
     guess = input("Guess the word: ").lower()
 
     if guess == chosen_word.lower():
         print("You got it! You got the word!!!")
-        return True, num_guesses
+        return True
     else:
         print("Nope, that's not it.")
-        return False, num_guesses + 1
+        return False
 
-def gameplay(num_players, word_bank):
+def gameplay(word_bank):
     print("Welcome to the Word Guessing Game. The game will start. \n")
+    num_players = numplayers
     chosen_word = random_word(word_bank)
     print("Your word has", len(chosen_word), "letters.")
 
-    player_scores = {i + 1: {"guessed_letters": set(), "guesses": 0} for i in range(num_players)}
+    for player in range(1, num_players + 1):
+        print("\nPlayer", player, "'s turn:")
+        guessed_letters = set()
+        guesses = 0
 
-    while True:
-        for player in player_scores.keys():
-            print("\nPlayer", player, "'s turn:")
-            current_word = " "
-            for letter in chosen_word:
-                if letter in player_scores[player]["guessed_letters"]:
-                    current_word += letter
+        while True:
+            print("Current word:", " ".join([letter if letter in guessed_letters else "_" for letter in chosen_word]))
+
+            guess_choice = input("Type 'letter to guess a letter or 'word' to guess the word: ")
+            
+            if guess_choice == "letter":
+                if guess_choice(chosen_word, guessed_letters):
+                    guesses +=1
+            elif guess_choice == "word":
+                if word_guesses(chosen_word):
+                    guesses += 1
+                    print("Number of guesses:", guesses)
+                break
             else:
-                current_word += "_"
+                print("Try again")
 
-        print("Current word: ", current_word)
 
-        guess_choice = input("Type out the word 'letter' to guess a letter or 'word' to guess the word: ").lower()
-
-        if guess_choice == "letter":
-            if letter_guess(chosen_word, player_scores[player]["guessed_letters"]):
-                player_scores[player]["guesses"] += 1
-            else:
-                print("Current: ", current_word)
-        elif guess_choice == "word":
-            guess_result, player_scores[player]["guesses"] = word_guesses(chosen_word, player_scores[player]["guesses"])
-            if guess_result:
-                return
-            if player_scores[player]["guesses"] >= 3:
-                print("Uh oh! You reached the maximum amount of guesses. You lost!")
-                return
-        else:
-            print("Try again.")
                 
 if __name__ == "__main__":
-    num_players = numplayers()
-    word_bank = ["Copper", "Curse", "Estate", "Silver", "Duchy", "Gold", "Province", "Cellar", "Market", "Militia", "Mine", "Moat", "Merchant", "Remodel", "Smithy", "Village", "Workshop", "Festival", "Laboratory", "Sentry", "Village", "Chapel", "Harbinger"]
-    gameplay(num_players, word_bank)
+    word_bank = ["copper", "curse", "estate", "silver", "duchy", "gold", "province", "cellar", "market", "militia", "mine", "moat", "merchant", "remodel", "smithy", "village", "workshop", "festival", "laboratory", "sentry", "village", "chapel", "harbinger"]
+    gameplay(word_bank)
