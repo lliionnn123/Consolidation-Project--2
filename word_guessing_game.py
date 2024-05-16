@@ -27,30 +27,34 @@ def letter_guess(chosen_word, guessed_letters, display_word):
         print(f"You've already guessed '{guess}'.")
         return False
         
+    guess_found = False
     for i in range(len(chosen_word)): 
-        print(f"You're getting closer! '{guess}' is in the word.")
         letter = chosen_word[i]
         if letter.lower() == guess:
-            if chosen_word[i] == guess:
-                display_word[i] = letter
-    else:
+            print(f"You're getting closer! '{guess}' is in the word.")
+            display_word[i] = guess
+            guess_found = True
+
+    if not guess_found:
         print(f"Nice try but '{guess}' is not in the word.")
         return True
 
-def word_guesses(chosen_word):
+def word_guesses(chosen_word, num_guesses):
     guess = input("Guess the word: ").lower()
 
     if guess == chosen_word.lower():
         print("You got it! You got the word!!!")
-        return True
+        return True, num_guesses
     else:
         print("Nope, that's not it.")
-        return False
+        return False, num_guesses + 1
 
 def gameplay(num_players, word_bank, display_word):
     print("Welcome to the Word Guessing Game. The game will start. \n")
     chosen_word = random_word(word_bank)
     print("Your word has", len(chosen_word), "letters.")
+
+    display_word = ["_" for _ in chosen_word]
 
     player_scores = {i + 1: {"guessed_letters": set(), "guesses": 0} for i in range(num_players)}
 
@@ -65,7 +69,9 @@ def gameplay(num_players, word_bank, display_word):
                 if letter_guess(chosen_word, player_scores[player]["guessed_letters"], display_word):
                     player_scores[player]["guesses"] += 1
             elif guess_choice == "word":
-                player_scores[player]["guesses"] = word_guesses(chosen_word, player_scores[player]["guesses"])
+                guess_result, player_scores[player]["guesses"] = word_guesses(chosen_word, player_scores[player]["guesses"])
+                if guess_result:
+                    return
                 if player_scores[player]["guesses"] >= 3:
                     print("Uh oh! You reached the maximum amount of guesses. You lost!")
                     return
