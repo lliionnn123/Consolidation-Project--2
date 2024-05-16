@@ -27,17 +27,14 @@ def letter_guess(chosen_word, guessed_letters, display_word):
         print(f"You've already guessed '{guess}'.")
         return False
         
-    guess_found = False
-    for i in range(len(chosen_word)): 
-        letter = chosen_word[i]
-        if letter.lower() == guess:
-            print(f"You're getting closer! '{guess}' is in the word.")
-            display_word[i] = guess
-            guess_found = True
-
-    if not guess_found:
-        print(f"Nice try but '{guess}' is not in the word.")
-        return True
+    guessed_letters.add(guess)
+    
+    occurrences = chosen_word.count(guess)
+    if occurrences > 0:
+        print(f"You're getting closer! '{guess}' is in the word {occurrences} time(s)")
+    else:
+        print(f"Nice guess but '{guess}' isn't in the word.")
+    return True
 
 def word_guesses(chosen_word, num_guesses):
     guess = input("Guess the word: ").lower()
@@ -68,6 +65,8 @@ def gameplay(num_players, word_bank, display_word):
             if guess_choice == "letter":
                 if letter_guess(chosen_word, player_scores[player]["guessed_letters"], display_word):
                     player_scores[player]["guesses"] += 1
+                else:
+                    print("Current: ", " ".join(display_word))
             elif guess_choice == "word":
                 guess_result, player_scores[player]["guesses"] = word_guesses(chosen_word, player_scores[player]["guesses"])
                 if guess_result:
